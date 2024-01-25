@@ -13,9 +13,6 @@ namespace ToDoList.Tests
     {
       Category.ClearAll();
     }
-
-  
-
     [TestMethod]
     public void CategoryConstructor_CreatesInstanceOfCategory_Category()
     {
@@ -60,20 +57,14 @@ namespace ToDoList.Tests
   [TestMethod]
   public void AddItem_AssociatesItemWithCategory_ItemList()
   {
-    //Arrange
     string description = "Walk the dog.";
     Item newItem = new Item(description);
     List<Item> newList = new List<Item> { newItem };
     string name = "Work";
     Category newCategory = new Category(name);
     newCategory.AddItem(newItem);
-
-    //Act
     List<Item> result = newCategory.Items;
-
-    //Assert
     CollectionAssert.AreEqual(newList, result);
   }
-
   }
 }
