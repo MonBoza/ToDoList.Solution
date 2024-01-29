@@ -14,7 +14,7 @@
 ## Setup/Installation Requirements
 
 * Open terminal or command prompt.
-* Clone the repository by running the following command to your desktop: git clone https://github.com/MonBoza/project.git
+* Clone the repository by running the following command to your desktop: git clone <https://github.com/MonBoza/ToDoList.Solution.git>
 * Make sure .gitignore is added to repository.
 * Run `dotnet build` in your terminal
 * Run test by navigating to the test directory and running `dotnet restore` and then `dotnet test`
