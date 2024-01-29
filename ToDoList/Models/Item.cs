@@ -5,136 +5,137 @@ namespace ToDoList.Models
 {
   public class Item
   {
+    public int ItemId { get; set; }
     public string Description { get; set; }
-    public int Id { get; set; }
 
-    public Item(string description)
-    {
-      Description = description;
-    }
-    public Item(string description, int id)
-    {
-      Description = description;
-      Id = id;
-    }
 
-    public override bool Equals(System.Object otherItem)
-    {
-      if (!(otherItem is Item))
-      {
-        return false;
-      }
-      else
-      {
-        Item newItem = (Item) otherItem;
-        bool idEquality = (this.Id == newItem.Id);
-        bool descriptionEquality = (this.Description == newItem.Description);
-        return (idEquality && descriptionEquality);
-      }
-    }
+  //   public Item(string description)
+  //   {
+  //     Description = description;
+  //   }
+  //   public Item(string description, int id)
+  //   {
+  //     Description = description;
+  //     Id = id;
+  //   }
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
+  //   public override bool Equals(System.Object otherItem)
+  //   {
+  //     if (!(otherItem is Item))
+  //     {
+  //       return false;
+  //     }
+  //     else
+  //     {
+  //       Item newItem = (Item) otherItem;
+  //       bool idEquality = (this.Id == newItem.Id);
+  //       bool descriptionEquality = (this.Description == newItem.Description);
+  //       return (idEquality && descriptionEquality);
+  //     }
+  //   }
 
-    public void Save()
-    {
-      MySqlConnection conn = new MySqlConnection(DBConfiguration.ConnectionString);
-      conn.Open();
-      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+  //   public override int GetHashCode()
+  //   {
+  //       return Id.GetHashCode();
+  //   }
 
-      cmd.CommandText = "INSERT INTO items (description) VALUES (@ItemDescription);";
+  //   public void Save()
+  //   {
+  //     MySqlConnection conn = new MySqlConnection(DBConfiguration.ConnectionString);
+  //     conn.Open();
+  //     MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
 
-      MySqlParameter param = new MySqlParameter();
-      param.ParameterName = "@ItemDescription";
-      param.Value = this.Description;
+  //     cmd.CommandText = "INSERT INTO items (description) VALUES (@ItemDescription);";
 
-      cmd.Parameters.Add(param);    
+  //     MySqlParameter param = new MySqlParameter();
+  //     param.ParameterName = "@ItemDescription";
+  //     param.Value = this.Description;
 
-      cmd.ExecuteNonQuery();
+  //     cmd.Parameters.Add(param);    
 
-      Id = (int) cmd.LastInsertedId;
+  //     cmd.ExecuteNonQuery();
 
-      conn.Close();
-      if (conn != null)
-      {
-        conn.Dispose();
-      }
-    }
+  //     Id = (int) cmd.LastInsertedId;
 
-    public static Item Find(int id)
-    {
-      MySqlConnection conn = new MySqlConnection(DBConfiguration.ConnectionString);
-      conn.Open();
+  //     conn.Close();
+  //     if (conn != null)
+  //     {
+  //       conn.Dispose();
+  //     }
+  //   }
 
-      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = "SELECT * FROM `items` WHERE id = @ThisId;";
+  //   public static Item Find(int id)
+  //   {
+  //     MySqlConnection conn = new MySqlConnection(DBConfiguration.ConnectionString);
+  //     conn.Open();
 
-      MySqlParameter param = new MySqlParameter();
-      param.ParameterName = "@ThisId";
-      param.Value = id;
+  //     MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+  //     cmd.CommandText = "SELECT * FROM `items` WHERE id = @ThisId;";
 
-      cmd.Parameters.Add(param);
+  //     MySqlParameter param = new MySqlParameter();
+  //     param.ParameterName = "@ThisId";
+  //     param.Value = id;
 
-      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
-      int itemId = 0;
-      string itemDescription = "";
-      while (rdr.Read())
-      {
-        itemId = rdr.GetInt32(0);
-        itemDescription = rdr.GetString(1);
-      }
-      Item foundItem = new Item(itemDescription, itemId);
+  //     cmd.Parameters.Add(param);
 
-      conn.Close();
-      if (conn != null)
-      {
-        conn.Dispose();
-      }
-      return foundItem;
-    }
+  //     MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+  //     int itemId = 0;
+  //     string itemDescription = "";
+  //     while (rdr.Read())
+  //     {
+  //       itemId = rdr.GetInt32(0);
+  //       itemDescription = rdr.GetString(1);
+  //     }
+  //     Item foundItem = new Item(itemDescription, itemId);
 
-    public static List<Item> GetAll()
-    {
-      List<Item> allItems = new List<Item> { };
+  //     conn.Close();
+  //     if (conn != null)
+  //     {
+  //       conn.Dispose();
+  //     }
+  //     return foundItem;
+  //   }
 
-      MySqlConnection conn = new MySqlConnection(DBConfiguration.ConnectionString);
-      conn.Open();
+  //   public static List<Item> GetAll()
+  //   {
+  //     List<Item> allItems = new List<Item> { };
 
-      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = "SELECT * FROM items;";
+  //     MySqlConnection conn = new MySqlConnection(DBConfiguration.ConnectionString);
+  //     conn.Open();
 
-      MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
-      while (rdr.Read())
-      {
-          int itemId = rdr.GetInt32(0);
-          string itemDescription = rdr.GetString(1);
-          Item newItem = new Item(itemDescription, itemId);
-          allItems.Add(newItem);
-      }
-      conn.Close();
-      if (conn != null)
-      {
-          conn.Dispose();
-      }
-      return allItems;
-    }
+  //     MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+  //     cmd.CommandText = "SELECT * FROM items;";
 
-    public static void ClearAll()
-    {
-      MySqlConnection conn = new MySqlConnection(DBConfiguration.ConnectionString);
-      conn.Open();
+  //     MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
+  //     while (rdr.Read())
+  //     {
+  //         int itemId = rdr.GetInt32(0);
+  //         string itemDescription = rdr.GetString(1);
+  //         Item newItem = new Item(itemDescription, itemId);
+  //         allItems.Add(newItem);
+  //     }
+  //     conn.Close();
+  //     if (conn != null)
+  //     {
+  //         conn.Dispose();
+  //     }
+  //     return allItems;
+  //   }
+
+  //   public static void ClearAll()
+  //   {
+  //     MySqlConnection conn = new MySqlConnection(DBConfiguration.ConnectionString);
+  //     conn.Open();
       
-      MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = "DELETE FROM items;";
-      cmd.ExecuteNonQuery();
+  //     MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+  //     cmd.CommandText = "DELETE FROM items;";
+  //     cmd.ExecuteNonQuery();
 
-      conn.Close();
-      if (conn != null)
-      {
-        conn.Dispose();
-      }
-    }
+  //     conn.Close();
+  //     if (conn != null)
+  //     {
+  //       conn.Dispose();
+  //     }
+  //   }
   }
 }
