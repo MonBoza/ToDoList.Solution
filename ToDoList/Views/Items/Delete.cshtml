@@ -1,0 +1,17 @@
+@{
+  Layout = "_Layout";
+}
+
+@model ToDoList.Models.Item
+
+<h2>Are you sure you want to delete this?</h2>
+
+@Html.DisplayNameFor(model => model.Description): @Html.DisplayFor(model => model.Description)
+@using (Html.BeginForm())
+{
+    <input type="submit" value="Delete" />
+}
+<p><strong>NOTE:</strong> You need to have at least one category before you can add an item!</p>
+<p>Go to @Html.ActionLink("this page", "Create", "Categories") to create a category.</p>
+
+@Html.ActionLink("Back to List", "Index")
