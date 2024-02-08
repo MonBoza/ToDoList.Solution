@@ -4,26 +4,34 @@ using Microsoft.AspNetCore.Mvc;
 using ToDoList.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace ToDoList.Controllers
 {
+  [Authorize]
   public class ItemsController : Controller
   {
     private readonly ToDoListContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public ItemsController(ToDoListContext db)
+    public ItemsController(UserManager<ApplicationUser> userManager, ToDoListContext db)
     {
+      _userManager = userManager;
       _db = db;
     }
-
-    public ActionResult Index()
+    public async Task<ActionResult> Index()
     {
-      List<Item> model = _db.Items
-                            .Include(item => item.Category)
-                            .ToList();
-      return View(model);
+      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+      List<Item> userItems = _db.Items
+                          .Where(entry => entry.User.Id == currentUser.Id)
+                          .Include(item => item.Category)
+                          .ToList();
+      return View(userItems);
     }
-
     public ActionResult Create()
     {
       ViewBag.CategoryId = new SelectList(_db.Categories, "CategoryId", "Name");
@@ -31,15 +39,18 @@ namespace ToDoList.Controllers
     }
 
     [HttpPost]
-    public ActionResult Create(Item item)
+    public async Task<ActionResult> Create(Item item, int CategoryId)
     {
       if (!ModelState.IsValid)
       {
-          ViewBag.CategoryId = new SelectList(_db.Categories, "CategoryId", "Name");
-          return View(item);
+        ViewBag.CategoryId = new SelectList(_db.Categories, "CategoryId", "Name");
+        return View(item);
       }
       else
       {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+        item.User = currentUser;
         _db.Items.Add(item);
         _db.SaveChanges();
         return RedirectToAction("Index");
@@ -96,16 +107,16 @@ namespace ToDoList.Controllers
     [HttpPost]
     public ActionResult AddTag(Item item, int tagId)
     {
-      #nullable enable
+#nullable enable
       ItemTag? joinEntity = _db.ItemTags.FirstOrDefault(join => (join.TagId == tagId && join.ItemId == item.ItemId));
-      #nullable disable
+#nullable disable
       if (joinEntity == null && tagId != 0)
       {
         _db.ItemTags.Add(new ItemTag() { TagId = tagId, ItemId = item.ItemId });
         _db.SaveChanges();
       }
       return RedirectToAction("Details", new { id = item.ItemId });
-    }   
+    }
 
     [HttpPost]
     public ActionResult DeleteJoin(int joinId)
@@ -114,6 +125,6 @@ namespace ToDoList.Controllers
       _db.ItemTags.Remove(joinEntry);
       _db.SaveChanges();
       return RedirectToAction("Index");
-    } 
+    }
   }
 }
